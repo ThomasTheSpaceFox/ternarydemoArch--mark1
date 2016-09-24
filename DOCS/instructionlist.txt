@@ -1,0 +1,81 @@
+----|ROMread 1(first register)
+---0|ROMread 2(second register)
+---+|IOread  1(first register)
+--0-|IOread  2(second register)
+--00|IOwrite 1(first register)
+--0+|IOwrite 2(second register)
+--+-|swap primary registers
+--+0|copy register 1 to 2
+--++|copy register 2 to 1
+-0--|invert register 1
+-0-0|invert register 2
+-0-+|add
+-00-|subtract
+-000|multiply
+-00+|rounded devide
+-0+-|set register 1
+-0+0|set register 2
+-0++
+-+--
+-+-0
+-+-+
+-+0-
+-+00
+-+0+
+-++-
+-++0
+-+++
+0---
+0--0
+0--+
+0-0-
+0-00
+0-0+
+0-+-
+0-+0
+0-++
+00--
+00-0
+00-+
+000-|stop (shuts down VM)
+0000|null
+000+|goto data specified ROM adress
+00+-|goto reg1 specified ROM adress
+00+0|goto data specified ROM adress IF REG 1 & 2 ARE EQUAL
+00++
+0+--
+0+-0
+0+-+
+0+0-
+0+00
+0+0+
+0++-
+0++0
+0+++
++---
++--0
++--+
++-0-
++-00
++-0+
++-+-
++-+0
++-++
++0--
++0-0
++0-+
++00-
++000
++00+
++0+-
++0+0
++0++
+++--
+++-0
+++-+
+++0-
+++00|
+++0+|dump register 1 to TTY
++++-|dump register 2 to TTY
++++0|tty write port (direct)
+++++|buzzer port (direct)
