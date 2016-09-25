@@ -8,6 +8,13 @@ def numstruct(code):
 	#print strut2
 	return strut2
 
+#used by the buzzer (do not use for 6 trit numtructs. use normal numstruct for that!)
+def buzznumstruct5(code):
+	strut1=(libbaltcalc.BTTODEC(code))
+	strut2=(strut1 + 122)
+	#print strut2
+	return strut2
+
 #more intelegent truncation function (used in the math functions for example)
 def trunkto6(code):
 	codecnt=0

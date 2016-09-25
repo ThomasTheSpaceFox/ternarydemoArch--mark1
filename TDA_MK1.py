@@ -13,6 +13,7 @@ import os
 import libTDAcommon
 import libbaltcalc
 import libttext
+import libtbuzz
 pygame.display.init()
 screensurf=pygame.display.set_mode((648, 486))
 pygame.display.set_caption("TDA Mark 1", "TDA Mark 1")
@@ -21,7 +22,15 @@ simplefont = pygame.font.SysFont(None, 16)
 pixcnt1=0
 pixjmp=14
 
-abt=["TDA", "Mark 1", "v1.0", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "ready", ""]
+abt=["TDA", "Mark 1", "v1.1", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "ready", ""]
+
+pygame.mixer.init(frequency=22050 , size=-16)
+
+
+
+wavsp=libtbuzz.mk1buzz("0-----")
+snf=pygame.mixer.Sound(wavsp)
+snf.play()
 
 #config defaults
 BOOTUPFILE="BOOTUP.TROM"
@@ -120,6 +129,8 @@ while stopflag==0:
 	#SHUTDOWN VM
 	elif curinst=="000-":
 		stopflag=1
+		abt=libTDAcommon.abtslackline(abt, "VM SYSHALT:")
+		abt=libTDAcommon.abtslackline(abt, "soft stop.")
 	#NULL INSTRUCTION (DOES NOTHING) USE WHEN YOU WISH TO DO NOTHING :p
 	elif curinst=="0000":
 		print("NULLinstruction")
@@ -149,16 +160,44 @@ while stopflag==0:
 		abt=libTDAcommon.abtcharblit(abt, (libttext.charcodelook(curdata)))
 	#Buzzer (direct)
 	elif curinst=="++++":
-		print "derp"
+		snf.stop()
+		#print "derp"
+		wavsp=libtbuzz.mk1buzz(curdata)
+		snf=pygame.mixer.Sound(wavsp)
+		snf.play()
+		timechop=curdata[0]
+		if timechop=="+":
+			time.sleep(0.7)
+		elif timechop=="-":
+			time.sleep(0.3)
+		else:
+			time.sleep(0.4)
+		
 	#print(EXECADDR)
 	
+	for event in pygame.event.get():
+		if event.type == KEYDOWN and event.key == K_ESCAPE:
+			stopflag=1
+			abt=libTDAcommon.abtslackline(abt, "VM SYSHALT:")
+			abt=libTDAcommon.abtslackline(abt, "User stop.")
+			break
+	pygame.event.clear()
+	
+	if curinst=="":
+		stopflag=1
+		abt=libTDAcommon.abtslackline(abt, "VM SYSHALT:")
+		abt=libTDAcommon.abtslackline(abt, "End Of Rom.")
 	if EXECADDR=="++++++":
 		stopflag=1
+		abt=libTDAcommon.abtslackline(abt, "VM SYSHALT:")
+		abt=libTDAcommon.abtslackline(abt, "End Of RomBus.")
 	EXECADDR=libbaltcalc.btadd(EXECADDR, "+")
 	if EXECCHANGE==1:
 		EXECCHANGE=0
 		#print("ding")
 		EXECADDR=EXECADDRNEXT
+	if stopflag==1:
+		abt=libTDAcommon.abtslackline(abt, "Press enter to exit.")
 	#clear buffer secion of IObus
 	#this means: DONT USE THE BUFFER SECTION OF THE IObus AS RAM :|
 	#chklist = open("ORDEREDLIST6REGISTER.txt")
