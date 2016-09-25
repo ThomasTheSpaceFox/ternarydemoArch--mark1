@@ -2,7 +2,7 @@
 (Ternary Demo Arch. Mark 1.)
 a simple and somewhat technical Balanced ternary Virtual Machine.
 
-v1.1 alpha
+v1.2 alpha
 
 (c)2016 Thomas Leathers
 
