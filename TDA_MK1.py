@@ -27,7 +27,7 @@ lgdispfont = pygame.font.SysFont(None, 20)
 pixcnt1=40
 pixjmp=14
 vmbg=pygame.image.load(os.path.join('GFX', 'VMBG.png'))
-abt=["TDA", "Mark 1", "v1.2", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "ready", ""]
+abt=["TDA", "Mark 1", "v1.2.1", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "ready", ""]
 
 pygame.mixer.init(frequency=22050 , size=-16)
 
@@ -40,7 +40,7 @@ snf.play()
 #config defaults
 BOOTUPFILE="BOOTUP.TROM"
 CPUWAIT=(0.1)
-
+stepbystep=0
 
 execfile('BOOTUP.CFG')
 #print BOOTUPFILE
@@ -93,6 +93,9 @@ while stopflag==0:
 	reg2text=lgdispfont.render(REG2, True, (255, 127, 0), (0, 0, 0))
 	screensurf.blit(reg1text, (558, 78))
 	screensurf.blit(reg2text, (558, 118))
+	#and here is what draws the ROM address display :)
+	reg2text=lgdispfont.render(EXECADDR, True, (0, 127, 255), (0, 0, 0))
+	screensurf.blit(reg2text, (558, 158))
 	#TTY drawer :)
 	for fnx in abt:
 		fnx=fnx.replace('\n', '')
@@ -202,20 +205,37 @@ while stopflag==0:
 		snf.play()
 		timechop=curdata[0]
 		if timechop=="+":
-			time.sleep(0.7)
-		elif timechop=="-":
 			time.sleep(0.3)
+		elif timechop=="-":
+			time.sleep(0.1)
 		else:
-			time.sleep(0.4)
+			time.sleep(0.2)
 		
 	#print(EXECADDR)
-	
-	for event in pygame.event.get():
-		if event.type == KEYDOWN and event.key == K_ESCAPE:
-			stopflag=1
-			abt=libTDAcommon.abtslackline(abt, "VM SYSHALT:")
-			abt=libTDAcommon.abtslackline(abt, "User stop.")
-			break
+	if stepbystep==1:
+		#this is used when step-by-step mode is enabled
+		evhappenflg2=0
+		while evhappenflg2==0:
+			time.sleep(.1)
+			for event in pygame.event.get():
+				if event.type == KEYDOWN and event.key == K_RETURN:
+					evhappenflg2=1
+					break
+				if event.type == KEYDOWN and event.key == K_ESCAPE:
+					stopflag=1
+					abt=libTDAcommon.abtslackline(abt, "VM SYSHALT:")
+					abt=libTDAcommon.abtslackline(abt, "User stop.")
+					evhappenflg2=1
+					break
+		
+	else:
+		#...otherwise this is used to passivly check for imput
+		for event in pygame.event.get():
+			if event.type == KEYDOWN and event.key == K_ESCAPE:
+				stopflag=1
+				abt=libTDAcommon.abtslackline(abt, "VM SYSHALT:")
+				abt=libTDAcommon.abtslackline(abt, "User stop.")
+				break
 	pygame.event.clear()
 	
 	if curinst=="":
@@ -246,6 +266,9 @@ while stopflag==0:
 		reg2text=lgdispfont.render(REG2, True, (255, 127, 0), (0, 0, 0))
 		screensurf.blit(reg1text, (558, 78))
 		screensurf.blit(reg2text, (558, 118))
+		#and here is what draws the ROM address display :)
+		reg2text=lgdispfont.render(EXECADDR, True, (0, 127, 255), (0, 0, 0))
+		screensurf.blit(reg2text, (558, 158))
 		for fnx in abt:
 			fnx=fnx.replace('\n', '')
 			abttext=simplefont.render(fnx, True, (0, 127, 255), (0, 0, 0))
