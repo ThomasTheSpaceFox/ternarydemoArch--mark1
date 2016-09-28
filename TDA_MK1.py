@@ -26,8 +26,22 @@ smldispfont = pygame.font.SysFont(None, 16)
 lgdispfont = pygame.font.SysFont(None, 20)
 pixcnt1=40
 pixjmp=14
+#graphics:
+#background pixmap
 vmbg=pygame.image.load(os.path.join('GFX', 'VMBG.png'))
-abt=["TDA", "Mark 1", "v1.2.1", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "ready", ""]
+#indicator lamps
+#GREEN
+LEDGREENON=pygame.image.load(os.path.join('GFX', 'LAMP-GREEN.png'))
+LEDGREENOFF=pygame.image.load(os.path.join('GFX', 'LAMP-GREEN-OFF.png'))
+#CPU
+CPULEDACT=pygame.image.load(os.path.join('GFX', 'LAMP-BLUE.png'))
+CPULEDSTANDBY=pygame.image.load(os.path.join('GFX', 'LAMP-ORANGE.png'))
+
+COLORDISP=pygame.image.load(os.path.join('GFX', 'COLORDISP-DEF.png'))
+MONODISP=pygame.image.load(os.path.join('GFX', 'MONODISP-DEF.png'))
+#this list is what is displayed on the TTY on VM boot.
+
+abt=["TDA", "Mark 1", "v2.0.0", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "ready", ""]
 
 pygame.mixer.init(frequency=22050 , size=-16)
 
@@ -38,7 +52,13 @@ snf=pygame.mixer.Sound(wavsp)
 snf.play()
 
 #config defaults
-BOOTUPFILE="BOOTUP.TROM"
+TROMA="BOOTUP.TROM"
+#these are dud roms full of soft stops
+TROMB=("DEFAULTdud.TROM")
+TROMC=("DEFAULTdud.TROM")
+TROMD=("DEFAULTdud.TROM")
+TROME=("DEFAULTdud.TROM")
+TROMF=("DEFAULTdud.TROM")
 CPUWAIT=(0.1)
 stepbystep=0
 
@@ -49,6 +69,12 @@ execfile('BOOTUP.CFG')
 #6 trit data.
 #as such:
 #iiiidddddd
+
+if stepbystep==1:
+	STEPLED=LEDGREENON
+else:
+	STEPLED=LEDGREENOFF
+
 
 #RAMBANK startup begin
 RAMbank = {}
@@ -65,11 +91,12 @@ for ramadr in libTDAcommon.calmlst:
 	RAMbank[ramadr] = "000000"
 	#
 
-
-
+MONODISPBIG=pygame.transform.scale(MONODISP, (144, 144))
+COLORDISPBIG=pygame.transform.scale(COLORDISP, (148, 148))
 #RAMBANK startup end
-
-ROMFILE=BOOTUPFILE
+colorreg="++++++"
+ROMFILE=TROMA
+ROMLAMPFLG="A"
 stopflag=0
 EXECCHANGE=0
 #ROMFILE=open(BOOTUPFILE)
@@ -96,6 +123,17 @@ while stopflag==0:
 	#and here is what draws the ROM address display :)
 	reg2text=lgdispfont.render(EXECADDR, True, (0, 127, 255), (0, 0, 0))
 	screensurf.blit(reg2text, (558, 158))
+	#and the current rom display :)
+	CURROMTEXT=("ROM " + ROMLAMPFLG)
+	reg2text=lgdispfont.render(CURROMTEXT, True, (255, 0, 255), (0, 0, 0))
+	screensurf.blit(reg2text, (558, 198))
+	#LED LAMPS
+	#CPU
+	screensurf.blit(CPULEDACT, (605, 433))
+	#STEP
+	screensurf.blit(STEPLED, (605, 440))
+	screensurf.blit(COLORDISPBIG, (358, 48))
+	screensurf.blit(MONODISPBIG, (358, 198))
 	#TTY drawer :)
 	for fnx in abt:
 		fnx=fnx.replace('\n', '')
@@ -164,6 +202,37 @@ while stopflag==0:
 	#set REG1
 	elif curinst=="-0+0":
 		REG2 = curdata
+	#color draw
+	elif curinst=="0---":
+		jx=libTDAcommon.drawnumstruct3((curdata[0] + curdata[1] + curdata[2]))
+		jy=libTDAcommon.drawnumstruct3((curdata[3] + curdata[4] + curdata[5]))
+		RGBcol=libTDAcommon.colorfind(colorreg)
+		#print monocol
+		pygame.draw.line(COLORDISP, RGBcol, [jx, jy], [jx, jy], 1)
+		COLORDISPBIG=pygame.transform.scale(COLORDISP, (148, 148))
+	#set PPU color Register
+	elif curinst=="0--0":
+		colorreg=curdata
+	elif curinst=="0--+":
+		RGBcol=libTDAcommon.colorfind(curdata)
+		#print monocol
+		COLORDISP.fill(RGBcol)
+		COLORDISPBIG=pygame.transform.scale(COLORDISP, (148, 148))
+	#mono draw
+	#mono draw pixel
+	elif curinst=="0-+-":
+		jx=libTDAcommon.drawnumstruct2((curdata[0] + curdata[1]))
+		jy=libTDAcommon.drawnumstruct2((curdata[2] + curdata[3]))
+		monocol=(int(libTDAcommon.dollytell((curdata[4] + curdata[5]))))
+		print monocol
+		pygame.draw.line(MONODISP, (monocol, monocol, monocol), [jx, jy], [jx, jy], 1)
+		MONODISPBIG=pygame.transform.scale(MONODISP, (144, 144))
+	#mono fill
+	elif curinst=="0-+0":
+		monocol=(int(libTDAcommon.dollytell((curdata[4] + curdata[5]))))
+		print monocol
+		MONODISP.fill((monocol, monocol, monocol))
+		MONODISPBIG=pygame.transform.scale(MONODISP, (144, 144))
 	#SHUTDOWN VM
 	elif curinst=="000-":
 		stopflag=1
@@ -185,6 +254,95 @@ while stopflag==0:
 		if REG1==REG2:
 			EXECADDRNEXT=curdata
 			EXECCHANGE=1
+	elif curinst=="00++":
+		waitchop=curdata[5]
+		if waitchop=="+":
+			waitmagn=3
+		elif waitchop=="-":
+			waitmagn=2
+		else:
+			waitmagn=1
+		time.sleep((CPUWAIT * waitmagn))
+	#note these swap TROMS
+	#TROMA: goto rom adress on TROMA specified by CURRENT DATA
+	elif curinst=="+---":
+		EXECADDRNEXT=curdata
+		EXECCHANGE=1
+		ROMFILE=TROMA
+		ROMLAMPFLG="A"
+	#conditional GOTO
+	elif curinst=="+--0":
+		if REG1==REG2:
+			EXECADDRNEXT=curdata
+			EXECCHANGE=1
+			ROMFILE=TROMA
+			ROMLAMPFLG="A"
+	#TROMB: goto rom adress on TROMB specified by CURRENT DATA
+	elif curinst=="+--+":
+		EXECADDRNEXT=curdata
+		EXECCHANGE=1
+		ROMFILE=TROMB
+		ROMLAMPFLG="B"
+	elif curinst=="+-0-":
+		if REG1==REG2:
+			EXECADDRNEXT=curdata
+			EXECCHANGE=1
+			ROMFILE=TROMB
+			ROMLAMPFLG="B"
+	#TROMC: goto rom adress on TROMC specified by CURRENT DATA
+	elif curinst=="+-00":
+		EXECADDRNEXT=curdata
+		EXECCHANGE=1
+		ROMFILE=TROMC
+		ROMLAMPFLG="C"
+	#conditional GOTO
+	elif curinst=="+-0+":
+		if REG1==REG2:
+			EXECADDRNEXT=curdata
+			EXECCHANGE=1
+			ROMFILE=TROMC
+			ROMLAMPFLG="C"
+	#TROMD: goto rom adress on TROMD specified by CURRENT DATA
+	elif curinst=="+-+-":
+		EXECADDRNEXT=curdata
+		EXECCHANGE=1
+		ROMFILE=TROMD
+		ROMLAMPFLG="D"
+	#conditional GOTO
+	elif curinst=="+-+0":
+		if REG1==REG2:
+			EXECADDRNEXT=curdata
+			EXECCHANGE=1
+			ROMFILE=TROMD
+			ROMLAMPFLG="D"
+	#TROME: goto rom adress on TROME specified by CURRENT DATA
+	elif curinst=="+-++":
+		EXECADDRNEXT=curdata
+		EXECCHANGE=1
+		ROMFILE=TROME
+		ROMLAMPFLG="E"
+	#conditional GOTO
+	elif curinst=="+0--":
+		if REG1==REG2:
+			EXECADDRNEXT=curdata
+			EXECCHANGE=1
+			ROMFILE=TROME
+			ROMLAMPFLG="E"
+	#TROMF: goto rom adress on TROMF specified by CURRENT DATA
+	elif curinst=="+0-0":
+		EXECADDRNEXT=curdata
+		EXECCHANGE=1
+		ROMFILE=TROMF
+		ROMLAMPFLG="F"
+	#conditional GOTO
+	elif curinst=="+0-+":
+		if REG1==REG2:
+			EXECADDRNEXT=curdata
+			EXECCHANGE=1
+			ROMFILE=TROMF
+			ROMLAMPFLG="F"
+	
+	
 	#dump register 1 to TTY
 	elif curinst=="++0+":
 		print ("REG1 DUMP:" + REG1)
@@ -211,6 +369,8 @@ while stopflag==0:
 		else:
 			time.sleep(0.2)
 		
+	
+	
 	#print(EXECADDR)
 	if stepbystep==1:
 		#this is used when step-by-step mode is enabled
@@ -269,6 +429,16 @@ while stopflag==0:
 		#and here is what draws the ROM address display :)
 		reg2text=lgdispfont.render(EXECADDR, True, (0, 127, 255), (0, 0, 0))
 		screensurf.blit(reg2text, (558, 158))
+		#LED LAMPS
+		screensurf.blit(COLORDISPBIG, (358, 48))
+		screensurf.blit(MONODISPBIG, (358, 198))
+		
+		CURROMTEXT=("ROM " + ROMLAMPFLG)
+		reg2text=lgdispfont.render(CURROMTEXT, True, (255, 0, 255), (0, 0, 0))
+		screensurf.blit(reg2text, (558, 198))
+		
+		screensurf.blit(CPULEDSTANDBY, (605, 433))
+		screensurf.blit(STEPLED, (605, 440))
 		for fnx in abt:
 			fnx=fnx.replace('\n', '')
 			abttext=simplefont.render(fnx, True, (0, 127, 255), (0, 0, 0))

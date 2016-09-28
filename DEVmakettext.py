@@ -39,7 +39,31 @@ TROMs are the programs for TDA MK1.
 now this is not a supercomputer,
 but do have fun :)'''
 
-CONVTEXT="--------------------------"
+CONVTEXT='''HI ^-^
+Here we have
+a raster demo!
+info:
+the top raster is 27x27
+6-trit RGB color (thats 729 colors!)
+needs 2 CPU instructions per pixel.
+(at most 1458 instructions per full
+27x27 image)
+try to draw all pixels of 1 color
+before changing colors to save
+ROM space!
+
+
+the bottom raster is 9x9
+2-trit greyscale. (27 shades)
+not a lot of colors on that one.
+but it only needs 1 CPU
+instruction per pixel! 
+(27 instructions needed to draw
+full 9x9 image)
+
+both rasters have fill instructions.
+try filling with the most common
+color to save space!'''
 
 codeBat=""
 #just open the output file in your code editor of choice, and copy it 

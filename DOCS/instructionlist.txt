@@ -25,14 +25,14 @@
 -++-
 -++0
 -+++
-0---
-0--0
-0--+
+0---|COLORDISP draw pixel using DRAWCOLOR using data XXXYYY ((Tip: draw same color pixels together between color changes)
+0--0|SET DRAWCOLOR using data CCCCCC where C is a 6-trit RGB color :D
+0--+|fill COLORDISP using data CCCCCC where C is a 6-trit RGB color :D
 0-0-
 0-00
 0-0+
-0-+-
-0-+0
+0-+-|MONODISP draw pixel dusing data XXYYMM where M=is a 2 trit monochrome value
+0-+0|fill COLORDISP using data ????MM where M=is a 2 trit monochrome value
 0-++
 00--
 00-0
@@ -42,7 +42,7 @@
 000+|goto data specified ROM adress
 00+-|goto reg1 specified ROM adress
 00+0|goto data specified ROM adress IF REG 1 & 2 ARE EQUAL
-00++
+00++|wait 1,2, or 3 times the clock time. (xxxxx+ = 3 xxxxx0= 1 xxxxx- = 2)
 0+--
 0+-0
 0+-+
@@ -52,18 +52,18 @@
 0++-
 0++0
 0+++
-+---
-+--0
-+--+
-+-0-
-+-00
-+-0+
-+-+-
-+-+0
-+-++
-+0--
-+0-0
-+0-+
++---|A manditory goto  (the following gotos switch TROMS! make sure config setup is done properly!
++--0|A reg equal goto
++--+|B manditory goto
++-0-|B reg equal goto
++-00|C manditory goto
++-0+|C reg equal goto
++-+-|D manditory goto
++-+0|D reg equal goto
++-++|E manditory goto
++0--|E reg equal goto
++0-0|F manditory goto
++0-+|F reg equal goto
 +00-
 +000
 +00+

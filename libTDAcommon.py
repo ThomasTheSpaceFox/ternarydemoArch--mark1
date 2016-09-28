@@ -14,6 +14,51 @@ def buzznumstruct5(code):
 	strut2=(strut1 + 122)
 	#print strut2
 	return strut2
+	
+def drawnumstruct3(code):
+	strut1=(libbaltcalc.BTTODEC(code))
+	strut2=(strut1 + 13)
+	#print strut2
+	return strut2
+
+def drawnumstruct2(code):
+	strut1=(libbaltcalc.BTTODEC(code))
+	strut2=(strut1 + 4)
+	#print strut2
+	return strut2
+#raster draw support
+def dollytell(lookupcode):
+	if lookupcode=="--":
+		return("0")
+	if lookupcode=="-0":
+		return("32")
+	if lookupcode=="-+":
+		return("64")
+	if lookupcode=="0-":
+		return("96")
+	if lookupcode=="00":
+		return("127")
+	if lookupcode=="0+":
+		return("159")
+	if lookupcode=="+-":
+		return("191")
+	if lookupcode=="+0":
+		return("223")
+	if lookupcode=="++":
+		return("255")
+
+
+def colorfind(CODE):
+	REDBT = (CODE[0] + CODE[1])
+	GRNBT = (CODE[2] + CODE[3])
+	BLUBT = (CODE[4] + CODE[5])
+	REDBIN = (dollytell(REDBT))
+	GRNBIN = (dollytell(GRNBT))
+	BLUBIN = (dollytell(BLUBT))
+	#NAME = datalist
+	return((int(REDBIN), int(GRNBIN), int(BLUBIN)))
+
+
 
 #more intelegent truncation function (used in the math functions for example)
 def trunkto6(code):
