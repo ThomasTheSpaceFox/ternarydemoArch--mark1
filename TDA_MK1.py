@@ -41,7 +41,7 @@ COLORDISP=pygame.image.load(os.path.join('GFX', 'COLORDISP-DEF.png'))
 MONODISP=pygame.image.load(os.path.join('GFX', 'MONODISP-DEF.png'))
 #this list is what is displayed on the TTY on VM boot.
 
-abt=["TDA", "Mark 1", "v2.0.0", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "ready", ""]
+abt=["TDA", "Mark 1", "v2.0.1", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "ready", ""]
 
 pygame.mixer.init(frequency=22050 , size=-16)
 
@@ -224,13 +224,13 @@ while stopflag==0:
 		jx=libTDAcommon.drawnumstruct2((curdata[0] + curdata[1]))
 		jy=libTDAcommon.drawnumstruct2((curdata[2] + curdata[3]))
 		monocol=(int(libTDAcommon.dollytell((curdata[4] + curdata[5]))))
-		print monocol
+		#print monocol
 		pygame.draw.line(MONODISP, (monocol, monocol, monocol), [jx, jy], [jx, jy], 1)
 		MONODISPBIG=pygame.transform.scale(MONODISP, (144, 144))
 	#mono fill
 	elif curinst=="0-+0":
 		monocol=(int(libTDAcommon.dollytell((curdata[4] + curdata[5]))))
-		print monocol
+		#print monocol
 		MONODISP.fill((monocol, monocol, monocol))
 		MONODISPBIG=pygame.transform.scale(MONODISP, (144, 144))
 	#SHUTDOWN VM
@@ -402,7 +402,7 @@ while stopflag==0:
 		stopflag=1
 		abt=libTDAcommon.abtslackline(abt, "VM SYSHALT:")
 		abt=libTDAcommon.abtslackline(abt, "End Of Rom.")
-	if EXECADDR=="++++++":
+	if EXECADDR=="+------":
 		stopflag=1
 		abt=libTDAcommon.abtslackline(abt, "VM SYSHALT:")
 		abt=libTDAcommon.abtslackline(abt, "End Of RomBus.")

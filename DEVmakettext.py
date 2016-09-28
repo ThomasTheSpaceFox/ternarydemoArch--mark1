@@ -54,7 +54,7 @@ ROM space!
 
 
 the bottom raster is 9x9
-2-trit greyscale. (27 shades)
+2-trit greyscale. (9 shades)
 not a lot of colors on that one.
 but it only needs 1 CPU
 instruction per pixel! 
