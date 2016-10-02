@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 import libbaltcalc
+import pygame
+
 
 #used to get linear adress point number in decimal (for example for fiding an adress in the rom)
 def numstruct(code):
@@ -58,7 +60,23 @@ def colorfind(CODE):
 	#NAME = datalist
 	return((int(REDBIN), int(GRNBIN), int(BLUBIN)))
 
-
+#returns pygame rectangle from 2 points used to draw vector filled rectangles
+def makerectbipoint(Jx1, Jy1, Jx2, Jy2):
+	if Jx1>Jx2:
+		sizeX=(Jx1-Jx2)
+		xval=Jx2
+	else:
+		sizeX=(Jx2-Jx1)
+		xval=Jx1
+	if Jy1>Jy2:
+		yval=Jy2
+		sizeY=(Jy1-Jy2)
+	else:
+		sizeY=(Jy2-Jy1)
+		yval=Jy1
+	sizeY += 1
+	sizeX += 1
+	return(pygame.Rect((xval, yval), (sizeX, sizeY)))
 
 #more intelegent truncation function (used in the math functions for example)
 def trunkto6(code):

@@ -1,0 +1,11 @@
+during runtime:
+VM functions:
+(if needed these should be cpuppled with a modifier.)
+[ESCAPE]=Stop VM
+[F7]=dump rasters
+[F8]=screenshot
+
+
+YNGOTO:
+[y]=yes
+[n]=no

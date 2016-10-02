@@ -1,0 +1,12 @@
+#this is a test assembly program for mark1
+#multiline text block.
+textstart
+hello
+world
+this is the first mark 1 program
+written in the assembler :D
+textstop
+
+#null instruction can be used to store generic data in rom.
+null|++-++-
+stop

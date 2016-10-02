@@ -1,2 +1,6 @@
 #output of development programs
 DEVmakettext-output.txt
+#user captures (screnshots, raster dumps, etc.)
+CAP/*
+#assembler output
+assmout.trom

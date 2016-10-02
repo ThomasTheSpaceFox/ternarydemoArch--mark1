@@ -1,0 +1,23 @@
+VM control keys:
+
+[ESCAPE]:
+issues a User stop.
+The VM will wait for you to press enter to exit
+
+[F2]:
+Toggles STEP-BY-STEP mode.
+also can be used as a "pause" feature
+
+[F7]:
+dump raster feilds to CAP directory. 
+Same filenames will be used each time,
+so be sure to rename/move images you wish to keep.
+
+[F8]:
+Take a screen shot and save it into CAP directory.
+
+
+[F10]:
+DUMP RAM into a file in the CAP directory.
+Same filename will be used each time,
+so be sure to rename/move memory dumps you wish to keep.

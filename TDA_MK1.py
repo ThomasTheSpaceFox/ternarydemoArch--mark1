@@ -26,6 +26,8 @@ smldispfont = pygame.font.SysFont(None, 16)
 lgdispfont = pygame.font.SysFont(None, 20)
 pixcnt1=40
 pixjmp=14
+USRYN=0
+USRWAIT=0
 #graphics:
 #background pixmap
 vmbg=pygame.image.load(os.path.join('GFX', 'VMBG.png'))
@@ -45,7 +47,7 @@ abt=["TDA", "Mark 1", "v2.0.1", "", "", "", "", "", "", "", "", "", "", "", "", 
 
 pygame.mixer.init(frequency=22050 , size=-16)
 
-
+extradraw=0
 
 wavsp=libtbuzz.mk1buzz("0-----")
 snf=pygame.mixer.Sound(wavsp)
@@ -69,6 +71,9 @@ execfile('BOOTUP.CFG')
 #6 trit data.
 #as such:
 #iiiidddddd
+
+colvectorreg="000000"
+monovectorreg="000000"
 
 if stepbystep==1:
 	STEPLED=LEDGREENON
@@ -218,6 +223,30 @@ while stopflag==0:
 		#print monocol
 		COLORDISP.fill(RGBcol)
 		COLORDISPBIG=pygame.transform.scale(COLORDISP, (148, 148))
+	#set PPU color vector Register
+	elif curinst=="0-0-":
+		colvectorreg=curdata
+	elif curinst=="0-00":
+		jx=libTDAcommon.drawnumstruct3((curdata[0] + curdata[1] + curdata[2]))
+		jy=libTDAcommon.drawnumstruct3((curdata[3] + curdata[4] + curdata[5]))
+		kx=libTDAcommon.drawnumstruct3((colvectorreg[0] + colvectorreg[1] + colvectorreg[2]))
+		ky=libTDAcommon.drawnumstruct3((colvectorreg[3] + colvectorreg[4] + colvectorreg[5]))
+		RGBcol=libTDAcommon.colorfind(colorreg)
+		#print monocol
+		pygame.draw.line(COLORDISP, RGBcol, [jx, jy], [kx, ky], 1)
+		COLORDISPBIG=pygame.transform.scale(COLORDISP, (148, 148))
+	#color draw rect
+	elif curinst=="0-0+":
+		jx=libTDAcommon.drawnumstruct3((curdata[0] + curdata[1] + curdata[2]))
+		jy=libTDAcommon.drawnumstruct3((curdata[3] + curdata[4] + curdata[5]))
+		kx=libTDAcommon.drawnumstruct3((colvectorreg[0] + colvectorreg[1] + colvectorreg[2]))
+		ky=libTDAcommon.drawnumstruct3((colvectorreg[3] + colvectorreg[4] + colvectorreg[5]))
+		RGBcol=libTDAcommon.colorfind(colorreg)
+		#print monocol
+		#pygame.draw.line(COLORDISP, RGBcol, [jx, jy], [kx, ky], 1)
+		COLORDISP.fill(RGBcol, (libTDAcommon.makerectbipoint(jx, jy, kx, ky)))
+		COLORDISPBIG=pygame.transform.scale(COLORDISP, (148, 148))
+	
 	#mono draw
 	#mono draw pixel
 	elif curinst=="0-+-":
@@ -232,6 +261,30 @@ while stopflag==0:
 		monocol=(int(libTDAcommon.dollytell((curdata[4] + curdata[5]))))
 		#print monocol
 		MONODISP.fill((monocol, monocol, monocol))
+		MONODISPBIG=pygame.transform.scale(MONODISP, (144, 144))
+	#set PPU mono vector Register
+	elif curinst=="0-++":
+		monovectorreg=curdata
+	#draw mono line
+	elif curinst=="00--":
+		jx=libTDAcommon.drawnumstruct2((curdata[0] + curdata[1]))
+		jy=libTDAcommon.drawnumstruct2((curdata[2] + curdata[3]))
+		kx=libTDAcommon.drawnumstruct2((monovectorreg[0] + monovectorreg[1]))
+		ky=libTDAcommon.drawnumstruct2((monovectorreg[2] + monovectorreg[3]))
+		monocol=(int(libTDAcommon.dollytell((curdata[4] + curdata[5]))))
+		#print monocol
+		pygame.draw.line(MONODISP, (monocol, monocol, monocol), [jx, jy], [kx, ky], 1)
+		MONODISPBIG=pygame.transform.scale(MONODISP, (144, 144))
+	#mono draw rect
+	elif curinst=="00-0":
+		jx=libTDAcommon.drawnumstruct2((curdata[0] + curdata[1]))
+		jy=libTDAcommon.drawnumstruct2((curdata[2] + curdata[3]))
+		kx=libTDAcommon.drawnumstruct2((monovectorreg[0] + monovectorreg[1]))
+		ky=libTDAcommon.drawnumstruct2((monovectorreg[2] + monovectorreg[3]))
+		monocol=(int(libTDAcommon.dollytell((curdata[4] + curdata[5]))))
+		#print monocol
+		#pygame.draw.line(MONODISP, (monocol, monocol, monocol), [jx, jy], [kx, ky], 1)
+		MONODISP.fill((monocol, monocol, monocol), (libTDAcommon.makerectbipoint(jx, jy, kx, ky)))
 		MONODISPBIG=pygame.transform.scale(MONODISP, (144, 144))
 	#SHUTDOWN VM
 	elif curinst=="000-":
@@ -263,6 +316,19 @@ while stopflag==0:
 		else:
 			waitmagn=1
 		time.sleep((CPUWAIT * waitmagn))
+	#asks user if goto to adress is desired
+	elif curinst=="0+--":
+		abt=libTDAcommon.abtslackline(abt, ("GOTO: (" + curdata + ") Y or N?"))
+		USRYN=1
+		extradraw=1	
+	#user wait
+	elif curinst=="0+-0":
+		abt=libTDAcommon.abtslackline(abt, ("Press enter to continue."))
+		USRWAIT=1
+		extradraw=1	
+	#TTY clear
+	elif curinst=="0+-+":
+		abt=["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]
 	#note these swap TROMS
 	#TROMA: goto rom adress on TROMA specified by CURRENT DATA
 	elif curinst=="+---":
@@ -368,8 +434,69 @@ while stopflag==0:
 			time.sleep(0.1)
 		else:
 			time.sleep(0.2)
-		
+	#needed by user quering opcodes such as 0+--	
+	if extradraw==1:
+		screensurf.blit(vmbg, (0, 0))
+		#these show the instruction and data in the instruction/data box :)
+		insttext=smldispfont.render(curinst, True, (0, 255, 255), (0, 0, 0))
+		datatext=smldispfont.render(curdata, True, (0, 255, 127), (0, 0, 0))
+		screensurf.blit(insttext, (552, 40))
+		screensurf.blit(datatext, (590, 40))
+		#these draw the register displays :)
+		reg1text=lgdispfont.render(REG1, True, (255, 0, 127), (0, 0, 0))
+		reg2text=lgdispfont.render(REG2, True, (255, 127, 0), (0, 0, 0))
+		screensurf.blit(reg1text, (558, 78))
+		screensurf.blit(reg2text, (558, 118))
+		#and here is what draws the ROM address display :)
+		reg2text=lgdispfont.render(EXECADDR, True, (0, 127, 255), (0, 0, 0))
+		screensurf.blit(reg2text, (558, 158))
+		#and the current rom display :)
+		CURROMTEXT=("ROM " + ROMLAMPFLG)
+		reg2text=lgdispfont.render(CURROMTEXT, True, (255, 0, 255), (0, 0, 0))
+		screensurf.blit(reg2text, (558, 198))
+		#LED LAMPS
+		#CPU
+		screensurf.blit(CPULEDACT, (605, 433))
+		#STEP
+		screensurf.blit(STEPLED, (605, 440))
+		screensurf.blit(COLORDISPBIG, (358, 48))
+		screensurf.blit(MONODISPBIG, (358, 198))
+		#TTY drawer :)
+		for fnx in abt:
+			fnx=fnx.replace('\n', '')
+			abttext=simplefont.render(fnx, True, (0, 127, 255), (0, 0, 0))
+			screensurf.blit(abttext, (45, pixcnt1))
+			pixcnt1 += pixjmp
+		pixcnt1=40
+		extradraw=0
+		pygame.display.update()
+	if USRWAIT==1:
+		evhappenflg2=0
+		while evhappenflg2==0:
+			time.sleep(.1)
+			for event in pygame.event.get():
+				if event.type == KEYDOWN and event.key == K_RETURN:
+					evhappenflg2=1
+					break
+		abt=libTDAcommon.abtslackline(abt, ("\n"))
+		USRWAIT=0
 	
+	
+	if USRYN==1:
+		evhappenflg2=0
+		while evhappenflg2==0:
+			time.sleep(.1)
+			for event in pygame.event.get():
+				if event.type == KEYDOWN and event.key == K_y:
+					EXECADDRNEXT=curdata
+					EXECCHANGE=1
+					evhappenflg2=1
+					break
+				if event.type == KEYDOWN and event.key == K_n:
+					evhappenflg2=1
+					break
+		abt=libTDAcommon.abtslackline(abt, ("\n"))
+		USRYN=0
 	
 	#print(EXECADDR)
 	if stepbystep==1:
@@ -387,6 +514,18 @@ while stopflag==0:
 					abt=libTDAcommon.abtslackline(abt, "User stop.")
 					evhappenflg2=1
 					break
+				if event.type == KEYDOWN and event.key == K_F7:
+					pygame.image.save(COLORDISP, (os.path.join('CAP', 'COLORDISP-OUT.png')))
+					pygame.image.save(MONODISP, (os.path.join('CAP', 'MONODISP-OUT.png')))
+					break
+				if event.type == KEYDOWN and event.key == K_F8:
+					pygame.image.save(screensurf, (os.path.join('CAP', 'SCREENSHOT.png')))
+					break
+				if event.type == KEYDOWN and event.key == K_F2:
+					stepbystep=0
+					STEPLED=LEDGREENOFF
+					evhappenflg2=1
+					break
 		
 	else:
 		#...otherwise this is used to passivly check for imput
@@ -396,7 +535,28 @@ while stopflag==0:
 				abt=libTDAcommon.abtslackline(abt, "VM SYSHALT:")
 				abt=libTDAcommon.abtslackline(abt, "User stop.")
 				break
+			if event.type == KEYDOWN and event.key == K_F7:
+				pygame.image.save(COLORDISP, (os.path.join('CAP', 'COLORDISP-OUT.png')))
+				pygame.image.save(MONODISP, (os.path.join('CAP', 'MONODISP-OUT.png')))
+				break
+			if event.type == KEYDOWN and event.key == K_F8:
+				pygame.image.save(screensurf, (os.path.join('CAP', 'SCREENSHOT.png')))
+				break
+			if event.type == KEYDOWN and event.key == K_F10:
+				ramdmp=open((os.path.join('CAP', 'mem.dump.txt')), 'w')
+				ramdmp.write(str(RAMbank))
+				ramdmp.close()
+				break
+			if event.type == KEYDOWN and event.key == K_F2:
+				stepbystep=1
+				STEPLED=LEDGREENON
+				break
 	pygame.event.clear()
+	
+	
+	
+	#aaaaannnnddd update display! :D
+	pygame.display.update()
 	
 	if curinst=="":
 		stopflag=1

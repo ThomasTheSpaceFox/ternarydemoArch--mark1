@@ -59,6 +59,8 @@ def colorfind(CODE):
 	return((int(REDBIN), int(GRNBIN), int(BLUBIN)))
 
 
+
+
 pygame.draw.line(screensurf, (colorfind("++0000")), [300, 300], [300,300], 1)
 pygame.display.update()
 
@@ -67,12 +69,27 @@ def drawpixcolor(CDISP, COL, jXY):
 	jx=libTDAcommon.drawnumstruct3((jXY[0] + jXY[1] + jXY[2]))
 	pygame.draw.line(DISP, colorfind(COL), [jx, jy], [jx, jy], 1)
 
-def drawpixmono(MDISP, COLXY)
+#def drawpixmono(MDISP, COLXY)
 
 	
+def makerectbipoint(Jx1, Jy1, Jx2, Jy2):
+	if Jx1>Jx2:
+		sizeX=(Jx1-Jx2)
+		xval=Jx2
+	else:
+		sizeX=(Jx2-Jx1)
+		xval=Jx1
+	if Jy1>Jy2:
+		yval=Jy2
+		sizeY=(Jy1-Jy2)
+	else:
+		sizeY=(Jy2-Jy1)
+		yval=Jy1
+	return(pygame.Rect((xval, yval), (sizeX, sizeY)))
+		
 
-	
-
+screensurf.fill((255, 255, 255), (makerectbipoint(40, 40, 0, 0)))
+pygame.display.update()
 evhappenflg2=0
 while evhappenflg2==0:
 		time.sleep(.1)
