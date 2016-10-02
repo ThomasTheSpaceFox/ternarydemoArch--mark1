@@ -2,5 +2,6 @@
 DEVmakettext-output.txt
 #user captures (screnshots, raster dumps, etc.)
 CAP/*
+!CAP/dummy.txt
 #assembler output
 assmout.trom
