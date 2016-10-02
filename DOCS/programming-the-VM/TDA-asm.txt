@@ -13,6 +13,13 @@ comments:
 comments can be acheved as such:
 "#comment"
 
+Multiline text blocks:
+
+	start command:
+	"textstart"
+	
+	end command:
+	"textstop"
 basic commands:
 
 These corrispond to TDA Mk1 Opcodes:

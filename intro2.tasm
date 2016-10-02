@@ -1,0 +1,44 @@
+#newer (revised) intro
+#replaces INTRO1.TROM
+buzzer|-+++++
+buzzer|0+++++
+buzzer|-+++++
+buzzer|0+++++
+buzzer|-+++++
+buzzer|0+++++
+buzzer|-+++++
+buzzer|0+++++
+#main intro text.
+textstart
+Hello :)
+This is Ternary Demo Arch Mark 1.
+This is a nice intro. c:
+
+This VM is a Balanced ternary
+computer.
+
+This TROM was compiled using TDA 
+Mark1's assembler: TDA-asm.py
+
+This is running in the VM in
+real-time. Each character takes 1
+CPU instruction. thats why these
+characters are being displayed like
+this. :)
+
+You can see to your right, various
+real-time status displays. :)
+
+press escape to stop the VM.
+
+do see the config file.
+(BOOTUP.CFG)
+
+you will find help in the DOCS
+directory.
+
+now this is not a supercomputer,
+but do have fun :)
+textstop
+TTYclear
+gotoB|------

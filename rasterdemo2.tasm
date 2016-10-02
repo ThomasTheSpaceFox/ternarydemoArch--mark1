@@ -1,0 +1,65 @@
+#second version of TDA-MK1's raster demo. :)
+#first graphics demo.
+TTYclear
+
+colorfill|00-++-
+setcolorreg|++-+00
+colorpixel|000000
+#tidbit 1
+textstart
+top raster info:
+27x27 pixels
+6-trit RGB color (729 colors!)
+needs 2 CPU instructions per pixel.
+(at most 1458 instructions per full
+27x27 image)
+textstop
+userwait
+TTYclear
+monofill|00000-
+monopixel|00000+
+monopixel|------
+monopixel|-0---0
+monopixel|-+---+
+monopixel|0---0-
+monopixel|00--00
+monopixel|0+--0+
+monopixel|+---+-
+monopixel|+0--+0
+monopixel|++--++
+#tidbit 2
+textstart
+
+bottom raster info:
+9x9 pixels
+2-trit greyscale. (9 shades)
+(at most 81 instructions needed to
+draw full 9x9 image)
+textstop
+userwait
+
+#second graphics demo
+TTYclear
+setcolorreg|--00++
+monofill|00--00
+colorline|+++-00
+setcolorvect|-----+
+colorline|+++-00
+setcolorvect|00+00+
+colorrect|++++++
+monofill|0000+0
+setmonovect|--0000
+monorect|++++00
+monoline|++00--
+monoline|++++--
+textstart
+As you can see. lines and filled
+rectangles can be used to draw
+images in much less instructions.
+
+it would be smart to use them to
+save space!
+textstop
+userwait
+
+stop

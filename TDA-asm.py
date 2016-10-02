@@ -24,6 +24,7 @@ for linen in fileinput.input():
 		assmnamelst=assmflename.rsplit('.', 1)
 		outfile=(assmnamelst[0] + (".trom"))
 		outn = open(outfile, 'w')
+		firstloop=0
 	lined=linen
 	linen=linen.replace("\n", "")
 	linen=linen.replace("	", "")
