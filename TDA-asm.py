@@ -15,8 +15,15 @@ instcnt=0
 txtblk=0
 
 outfile="assmout.trom"
-outn = open(outfile, 'w')
+
+
+firstloop=1
 for linen in fileinput.input():
+	if firstloop==1:
+		assmflename=fileinput.filename()
+		assmnamelst=assmflename.rsplit('.', 1)
+		outfile=(assmnamelst[0] + (".trom"))
+		outn = open(outfile, 'w')
 	lined=linen
 	linen=linen.replace("\n", "")
 	linen=linen.replace("	", "")
@@ -204,5 +211,6 @@ for linen in fileinput.input():
 		instcnt += 1
 	if instcnt>assmoverrun:
 		print("ERROR!: assembler has exceded rom size limit of 729!")
-assmflename=fileinput.filename()
-print ("TDA Mk1 assembly file \"" + assmflename + "\" has been compiled into assmout.trom")
+
+
+print ("TDA Mk1 assembly file \"" + assmflename + "\" has been compiled into: \"" + outfile + "\"")
